@@ -59,7 +59,7 @@ pipeline {
             steps {
                 script {
                     waitUntil {
-                        return fileExists('/root/workspace/java_app/target/')
+                        return fileExists('/var/lib/jenkins/workspace/java_app')
                     }
                 }
             }
