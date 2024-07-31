@@ -102,10 +102,10 @@ pipeline {
                 }
             }
         }
-    post {
-      success {script{echo 'success'}}
-      failure {script{echo 'failure'}}
-      always {script{echo 'always runs'}}
-    }
+        post {
+          success {script{echo 'success'}}
+          failure {script{echo 'failure'}}
+          always {script{echo 'always runs'}}
+       }
   }
 }
