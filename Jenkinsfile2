@@ -46,7 +46,6 @@ pipeline {
             }
         }
 
-
         stage('Maven Build : maven') {
             when { expression { params.action == 'create' } }
             steps {
@@ -56,16 +55,15 @@ pipeline {
             }
         }
 
-        stage('wait until') {
+        stage('Wait until') {
             steps {
-              script {
-                waitUntil {
-                    return fileExists('/java_app/target/')
-                  } 
-              }        
-           }
+                script {
+                    waitUntil {
+                        return fileExists('/java_app/target/')
+                    }
+                }
+            }
         }
-
 
         stage('Docker Image Build') {
             when { expression { params.action == 'create' } }
@@ -102,10 +100,23 @@ pipeline {
                 }
             }
         }
-        post {
-          success {script{echo 'success'}}
-          failure {script{echo 'failure'}}
-          always {script{echo 'always runs'}}
-       }
-  }
+    }
+
+    post {
+        success {
+            script {
+                echo 'Pipeline succeeded!'
+            }
+        }
+        failure {
+            script {
+                echo 'Pipeline failed.'
+            }
+        }
+        always {
+            script {
+                echo 'This will always run.'
+            }
+        }
+    }
 }
