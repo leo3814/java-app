@@ -58,11 +58,14 @@ pipeline {
 
         stage('wait until') {
             steps {
-              waitUntil {
-                  return fileExists('/java-app/target/')
+              script {
+                waitUntil {
+                    return fileExists('/java-app/target/')
                   } 
               }        
+           }
         }
+
 
         stage('Docker Image Build') {
             when { expression { params.action == 'create' } }
