@@ -10,8 +10,8 @@ pipeline{
         choice(name: 'action', choices: 'create\ndelete', description: 'Choose create/Destroy')
         string(name: 'ImageName', description: "name of the docker build", defaultValue: 'javapp')
         string(name: 'ImageTag', description: "tag of the docker build", defaultValue: 'v1')
-        string(name: 'DockerHubUser', description: "name of the Application", defaultValue: 'praveensingam1994')
-    }
+        string(name: 'DockerHubUser', description: "name of the Application", defaultValue: 'leo3814')
+    
 
     stages{
          
@@ -24,26 +24,34 @@ pipeline{
             )
             }
         }
-         stage('Unit Test maven'){
+        
+         stage('Unit test and integration test') {
+           parallel{
+              stage('Unit Test maven'){
          
-         when { expression {  params.action == 'create' } }
+              when { expression {  params.action == 'create' } }
 
-            steps{
-               script{
+                steps{
+                  script{
                    
-                   mvnTest()
+                     mvnTest()
                }
             }
         }
-         stage('Integration Test maven'){
-         when { expression {  params.action == 'create' } }
-            steps{
-               script{
+        
+            stage('Integration Test maven'){
+            when { expression {  params.action == 'create' } }
+              steps{
+                 script{
                    
-                   mvnIntegrationTest()
+                     mvnIntegrationTest()
                }
             }
         }
+        
+      }
+      
+   }   
         stage('Static code analysis: Sonarqube'){
          when { expression {  params.action == 'create' } }
             steps{
@@ -110,4 +118,6 @@ pipeline{
             }
         }      
     }
+ }
+
 }
