@@ -60,7 +60,7 @@ pipeline {
             steps {
               script {
                 waitUntil {
-                    return fileExists('/java-app/target/')
+                    return fileExists('/java_app/target/')
                   } 
               }        
            }
@@ -102,5 +102,16 @@ pipeline {
                 }
             }
         }
+    post {
+      success {
+         echo 'success'
+      }
+      failure {
+         echo 'failure'
+      }
+      always {
+         echo 'always runs'
+      }
     }
+   }
 }
