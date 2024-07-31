@@ -62,7 +62,7 @@ pipeline {
                   return fileExists('/java-app/target/')
                   } 
               }        
-       }
+        }
 
         stage('Docker Image Build') {
             when { expression { params.action == 'create' } }
