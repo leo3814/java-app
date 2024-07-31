@@ -1,122 +1,72 @@
-@Library('my-shared-library') _
-
 pipeline {
     agent any
-    //agent { label 'Demo' }
-
-    parameters {
-        choice(name: 'action', choices: ['create', 'delete'], description: 'Choose create/Destroy')
-        string(name: 'ImageName', description: "name of the docker build", defaultValue: 'javapp')
-        string(name: 'ImageTag', description: "tag of the docker build", defaultValue: 'v1')
-        string(name: 'DockerHubUser', description: "name of the Application", defaultValue: 'leo3814')
-    }
 
     stages {
-        stage('Git Checkout') {
-            when { expression { params.action == 'create' } }
+        stage('Build') {
             steps {
                 script {
-                    gitCheckout(
-                        branch: "main",
-                        url: "https://github.com/praveen1994dec/Java_app_3.0.git"
+                    echo 'Building the application...'
+                    // Add your build steps here
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                script {
+                    echo 'Running tests...'
+                    // Add your test steps here
+                }
+            }
+        }
+        
+        stage('Deploy to Staging') {
+            steps {
+                script {
+                    echo 'Deploying to staging environment...'
+                    // Add your staging deployment steps here
+                }
+            }
+        }
+        
+        stage('Approval for Production Deployment') {
+            steps {
+                script {
+                    def userInput = input(
+                        id: 'approval', 
+                        message: 'Approve deployment to production?', 
+                        parameters: [
+                            choice(name: 'Proceed', choices: ['Yes', 'No'], description: 'Do you want to proceed with deployment to production?')
+                        ]
                     )
-                }
-            }
-        }
-
-        stage('Unit test and integration test') {
-            parallel {
-                stage('Unit Test maven') {
-                    when { expression { params.action == 'create' } }
-                    steps {
-                        script {
-                            mvnTest()
-                        }
-                    }
-                }
-
-                stage('Integration Test maven') {
-                    when { expression { params.action == 'create' } }
-                    steps {
-                        script {
-                            mvnIntegrationTest()
-                        }
+                    
+                    if (userInput.Proceed == 'No') {
+                        error 'Deployment to production was aborted by user.'
                     }
                 }
             }
         }
-
-        stage('Maven Build : maven') {
-            when { expression { params.action == 'create' } }
+        
+        stage('Deploy to Production') {
             steps {
                 script {
-                    mvnBuild()
-                }
-            }
-        }
-
-        stage('Wait until') {
-            steps {
-                script {
-                    waitUntil {
-                        return fileExists('/var/lib/jenkins/workspace/java_app')
-                    }
-                }
-            }
-        }
-
-        stage('Docker Image Build') {
-            when { expression { params.action == 'create' } }
-            steps {
-                script {
-                    dockerBuild("${params.ImageName}", "${params.ImageTag}", "${params.DockerHubUser}")
-                }
-            }
-        }
-
-        stage('Docker Image Scan: trivy') {
-            when { expression { params.action == 'create' } }
-            steps {
-                script {
-                    dockerImageScan("${params.ImageName}", "${params.ImageTag}", "${params.DockerHubUser}")
-                }
-            }
-        }
-
-        stage('Docker Image Push : DockerHub') {
-            when { expression { params.action == 'create' } }
-            steps {
-                script {
-                    dockerImagePush("${params.ImageName}", "${params.ImageTag}", "${params.DockerHubUser}")
-                }
-            }
-        }
-
-        stage('Docker Image Cleanup : DockerHub') {
-            when { expression { params.action == 'create' } }
-            steps {
-                script {
-                    dockerImageCleanup("${params.ImageName}", "${params.ImageTag}", "${params.DockerHubUser}")
+                    echo 'Deploying to production environment...'
+                    // Add your production deployment steps here
                 }
             }
         }
     }
-
+    
     post {
         success {
-            script {
-                echo 'Pipeline succeeded!'
-            }
+            echo 'Pipeline completed successfully!'
         }
         failure {
-            script {
-                echo 'Pipeline failed.'
-            }
+            echo 'Pipeline failed.'
         }
         always {
-            script {
-                echo 'This will always run.'
-            }
+            echo 'Cleaning up...'
+            // Add cleanup steps here
         }
     }
 }
