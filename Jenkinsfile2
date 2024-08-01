@@ -4,59 +4,33 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                script {
-                    echo 'Building the application...'
-                    // Add your build steps here
-                }
+                echo 'Building...'
             }
         }
-        
-        stage('Test') {
-            steps {
-                script {
-                    echo 'Running tests...'
-                    // Add your test steps here
-                }
-            }
-        }
-        
-        stage('Deploy to Staging') {
-            steps {
-                script {
-                    echo 'Deploying to staging environment...'
-                    // Add your staging deployment steps here
-                }
-            }
-        }
-        
-        stage('Approval for Production Deployment') {
+        stage('Approval') {
             steps {
                 script {
                     def userInput = input(
-                        id: 'approval', 
-                        message: 'Approve deployment to production?', 
+                        id: 'userInput',
+                        message: 'Do you want to proceed with deployment?',
                         parameters: [
-                            choice(name: 'Proceed', choices: ['Yes', 'No'], description: 'Do you want to proceed with deployment to production?')
+                            choice(name: 'Proceed', choices: ['Yes', 'No'], description: 'Choose Yes to proceed or No to abort.')
                         ]
                     )
-                    
-                    if (userInput.Proceed == 'No') {
-                        error 'Deployment to production was aborted by user.'
+                    if (userInput == 'No') {
+                        error 'Deployment aborted by user.'
+                    } else {
+                        echo 'User chose to proceed with deployment.'
                     }
                 }
             }
         }
-        
         stage('Deploy to Production') {
             steps {
-                script {
-                    echo 'Deploying to production environment...'
-                    // Add your production deployment steps here
-                }
+                echo 'Deploying...'
             }
         }
     }
-    
     post {
         success {
             echo 'Pipeline completed successfully!'
@@ -65,8 +39,7 @@ pipeline {
             echo 'Pipeline failed.'
         }
         always {
-            echo 'Cleaning up...'
-            // Add cleanup steps here
+            echo 'Pipeline finished.'
         }
     }
 }
