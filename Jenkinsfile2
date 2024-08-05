@@ -1,4 +1,7 @@
-stage('usernamePassword') {
+pipeline {
+ agent any
+ stages {
+  stage('usernamePassword') {
     steps {
         script {
             withCredentials([
