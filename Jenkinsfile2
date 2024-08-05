@@ -13,7 +13,6 @@ pipeline {
                 )
             ]) {
                 print 'keyFile=' + keyFile
-                print 'passphrase=' + passphrase
                 print 'username=' + username
                 print 'keyFile.collect { it }=' + keyFile.collect { it }
                 print 'username.collect { it }=' + username.collect { it }
