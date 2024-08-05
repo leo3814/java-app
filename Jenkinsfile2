@@ -2,21 +2,21 @@ pipeline {
     agent any
 
     stages {
-      stage('usernameColonPassword') {
+      stage('string (secret text)') {
     steps {
         script {
             withCredentials([
-                usernameColonPassword(
-                    credentialsId: 'gitlab',
-                    variable: 'userpass'
+                string(
+                    credentialsId: 'joke-of-the-day',
+                    variable: 'joke'
                 )
             ]) {
-                print 'userpass=' + userpass
-                print 'userpass.collect { it }=' + userpass.collect { it }
+                print 'joke=' + joke
+                print 'joke.collect { it }=' + joke.collect { it }
              }
           }
-       }
-     }
-
+        }
+      }
+ 
    }
 }
