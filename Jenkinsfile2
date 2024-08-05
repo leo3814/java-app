@@ -1,45 +1,16 @@
-pipeline {
-    agent any
-
-    stages {
-        stage('Build') {
-            steps {
-                echo 'Building...'
+stage('usernamePassword') {
+    steps {
+        script {
+            withCredentials([
+                usernamePassword(credentialsId: 'gitlab',
+                usernameVariable: 'username',
+                passwordVariable: 'password')
+            ]) {
+                print 'username=' + username
+                print 'password=' + password
+                print 'username.collect { it }=' + username.collect { it }
+                print 'password.collect { it }=' + password.collect { it }
             }
-        }
-        stage('Approval') {
-            steps {
-                script {
-                    def userInput = input(
-                        id: 'userInput',
-                        message: 'Do you want to proceed with deployment?',
-                        parameters: [
-                            choice(name: 'Proceed', choices: ['Yes', 'No'], description: 'Choose Yes to proceed or No to abort.')
-                        ]
-                    )
-                    if (userInput == 'No') {
-                        error 'Deployment aborted by user.'
-                    } else {
-                        echo 'User chose to proceed with deployment.'
-                    }
-                }
-            }
-        }
-        stage('Deploy to Production') {
-            steps {
-                echo 'Deploying...'
-            }
-        }
-    }
-    post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed.'
-        }
-        always {
-            echo 'Pipeline finished.'
         }
     }
 }
